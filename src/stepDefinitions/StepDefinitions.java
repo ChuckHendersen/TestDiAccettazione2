@@ -1,13 +1,8 @@
 package stepDefinitions;
 
 import static org.junit.Assert.*;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
-
 import it.uniroma3.diadia.*;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -260,7 +255,6 @@ public class StepDefinitions {
 					+ "-La stampa di morte e' stata modificata\n"
 					+ "-Il personaggio non muore"));
 		}
-
 		assertTrue(trovataParolaChiave);
 	}
 }
