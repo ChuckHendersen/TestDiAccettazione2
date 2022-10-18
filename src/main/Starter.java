@@ -14,7 +14,7 @@ public class Starter {
 		if(c.controlliPrimaDellaConsegna()){
 			System.out.println("Test preliminari passati con successo!");
 			System.out.println("Test di accettazione in avvio...");
-			io.cucumber.core.cli.Main.main(new String[]{"-g", "classpath:"});
+			io.cucumber.core.cli.Main.main(new String[]{"-g", "classpath:","-m","-p","pretty"});
 		}else{
 			System.out.println("ATTENZIONE! uno o piu' dei controlli prima della consegna "
 					+ "non e' andato a buon fine,\nsistemare gli errori prima di poter avviare "
