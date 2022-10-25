@@ -7,7 +7,7 @@ import org.junit.Test;
 
 public class Controllore {
 	
-	boolean risultato;
+	private boolean risultato;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -122,7 +122,7 @@ public class Controllore {
 
 	@Test
 	public void esisteComando() {
-		String nomeAtteso = "it.uniroma3.diadia.Comando";
+		String nomeAtteso = "it.uniroma3.diadia.comandi.Comando";
 		try {
 			Class.forName(nomeAtteso);
 			System.out.println("OK! Esiste Comando ed e' nel package corretto.");
@@ -158,11 +158,4 @@ public class Controllore {
 		}
 		assertTrue(this.risultato);
 	}
-
-//	public boolean controlliPrimaDellaConsegna() {
-//		return this.esisteDiaDia()&&this.esistePartita()&&this.esisteLabirinto()&&
-//				this.esisteStanza()&&this.esisteGiocatore()&&this.esisteComando()&&
-//				this.esisteBorsa()&&this.esisteAttrezzo()&&/*this.esistenzaInterfaceIo()&&*/
-//				this.esistenzaBuilderDiadia();
-//	}
 }
