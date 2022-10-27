@@ -14,6 +14,8 @@ public class Starter {
 //		}
 		
 		
+		
+		
 		System.out.println("Test preliminari in avvio...");
 		JUnitCore c = new JUnitCore();
 		Result risultati=c.run(Controllore.class);
