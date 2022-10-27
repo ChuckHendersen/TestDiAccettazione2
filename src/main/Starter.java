@@ -12,7 +12,6 @@ public class Starter {
 //		for(URL url: urls){
 //			System.out.println(url.getFile());
 //		}
-		
 		System.out.println("Test preliminari in avvio...");
 		JUnitCore c = new JUnitCore();
 		Result risultati=c.run(Controllore.class);
