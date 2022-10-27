@@ -3,6 +3,9 @@ package it.uniroma3.diadia;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /*
  * Classe che simula gli input da dare al gioco e raccoglie gli output restituiti da esso.
@@ -11,9 +14,8 @@ import java.util.List;
 
 public class IOSimulator implements IO {
 	
-	private List<String> inputList;
-	private Iterator<String> itInput;
-	private List<String> outputList;
+	private BlockingQueue<String> inputList;
+	private BlockingQueue<String> outputList;
 	
 	/*
 	 * Costruttore che crea un simulatore di IO
@@ -21,10 +23,8 @@ public class IOSimulator implements IO {
 	 */
 	
 	public IOSimulator() {
-		this.inputList = new ArrayList<String>();
-		//this.inputList.add("Giocatore Simulato");
-		this.itInput = this.inputList.iterator();
-		this.outputList = new ArrayList<String>();
+		this.inputList = new LinkedBlockingQueue<String>();
+		this.outputList = new LinkedBlockingQueue<String>();
 	}
 	
 	/*
@@ -33,33 +33,28 @@ public class IOSimulator implements IO {
 	 * @param listaInput Lista di input (List<String>)
 	 */
 	
-	public IOSimulator(List<String> listaInput) {
-		//this.inputList.add("Giocatore Simulato");
-		this.inputList.addAll(listaInput);
-		this.itInput = inputList.iterator();
-		this.outputList = new ArrayList<String>();
+	public IOSimulator(BlockingQueue<String> listaInput) {
+		super();
+		this.inputList=listaInput;
 	}
 	
-	public Iterator<String> getIterator(){
-		return itInput;
-	}
-	
-	public void setListaInput(List<String> listaInput) {
-		this.inputList = listaInput;
+	public void setListaInput(BlockingQueue<String> listaInput) {
+		this.inputList=listaInput;
 //		System.out.println(this.inputList);
-		this.itInput = inputList.iterator();
 	}
-	
-	public void setListaInputSenzaNome(List<String> listaInput) {
-		this.inputList = listaInput;
-		this.itInput = inputList.iterator();
+	public void setListaOutput(BlockingQueue<String> listaOutput) {
+		this.outputList=listaOutput;
 	}
+//	public void setListaInputSenzaNome(List<String> listaInput) {
+//		this.inputList = listaInput;
+//		this.itInput = inputList.iterator();
+//	}
 	
-	public List<String> getInputList(){
+	public BlockingQueue<String> getInputList(){
 		return inputList;
 	}
 	
-	public List<String> getOutputList(){
+	public BlockingQueue<String> getOutputList(){
 		return outputList;
 	}
 	
@@ -69,7 +64,11 @@ public class IOSimulator implements IO {
 	
 	@Override
 	public void mostraMessaggio(String msg) {
-		this.outputList.add(msg);
+		try {
+			this.outputList.put(msg);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/*
@@ -79,8 +78,10 @@ public class IOSimulator implements IO {
 	 */
 	@Override
 	public String leggiRiga() {
-		if(itInput.hasNext()) 
-			return itInput.next();
+		String res = inputList.poll();
+		if(res!=null){
+			return res;
+		}
 		return "fine";
 		// Per motivi di precauzione l'ultimo input è sempre fine
 	}

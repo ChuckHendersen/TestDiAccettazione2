@@ -3,6 +3,9 @@ package stepDefinitions;
 import static org.junit.Assert.*;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 import it.uniroma3.diadia.*;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -33,16 +36,20 @@ public class StepDefinitions {
 	private String stringaDiBenvenuto;
 	private IOSimulator ioSim;
 
-	private List<String> listaInput;
+	private BlockingQueue<String> listaInput;
+	private BlockingQueue<String> listaOutput;
 
 	//	private Labirinto lab;
 
 	private Thread threadDiGioco;
 
 	public StepDefinitions() {
-		listaInput = new LinkedList<>();
+		listaInput = new LinkedBlockingQueue<String>();
+		listaOutput = new LinkedBlockingQueue<String>();
 		this.stringaDiBenvenuto = null;
 		this.ioSim = new IOSimulator();
+		this.ioSim.setListaInput(listaInput);
+		this.ioSim.setListaOutput(listaOutput);
 		threadDiGioco = new Thread(new RunnableDiaDia(ioSim), "Thread di Gioco");
 	}
 
@@ -55,13 +62,7 @@ public class StepDefinitions {
 	
 	@Given("il gioco e stato avviato")
 	public void il_gioco_e_stato_avviato() {
-		ioSim.setListaInput(listaInput);
 		threadDiGioco.start();
-		try {
-			threadDiGioco.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 
 	@Given("^avviato$")
@@ -72,7 +73,6 @@ public class StepDefinitions {
 	@Then("viene mostrato il messaggio_di_benvenuto")
 	public void viene_mostrato_il_messaggio_di_benvenuto() {
 		try {
-			stringaDiBenvenuto = ioSim.getOutputList().get(0);
 			for(String stringa:ioSim.getOutputList()) {
 				if(stringa.contains(MESSAGGIO_BENVENUTO)) {
 					//esiste la stringa di benvenuto all'interno dell stampe di gioco
@@ -100,7 +100,7 @@ public class StepDefinitions {
 	@Then("hai vinto la partita")
 	public void hai_vinto_la_partita() {
 		//Dovrebbe contenere la stringa di benvenuto e quella di arrivederci
-		if(ioSim.getOutputList().get(ioSim.getOutputList().size()-1).contains(MESSAGGIO_VITTORIA)) {
+		if(listaOutput.contains(MESSAGGIO_VITTORIA)) {
 			//esiste la stringa di benvenuto all'interno dell stampe di gioco
 			assertTrue(true);
 			return;
@@ -113,7 +113,7 @@ public class StepDefinitions {
 	@Then("il gioco stampa un messaggio di arrivederci")
 	public void il_gioco_stampa_un_messaggio_di_arrivederci() {
 		//Dovrebbe contenere la stringa di benvenuto e quella di arrivederci
-		if(ioSim.getOutputList().get(ioSim.getOutputList().size()-1).contains(MESSAGGIO_ARRIVEDERCI)) {
+		if(listaOutput.contains(MESSAGGIO_ARRIVEDERCI)) {
 			//esiste la stringa di benvenuto all'interno dell stampe di gioco
 			assertTrue(true);
 			return;
@@ -141,9 +141,9 @@ public class StepDefinitions {
 	}
 
 	@Given("carico il comando {string}")
-	public void carico_il_comando(String string) {
+	public void carico_il_comando(String string) throws InterruptedException {
 		if(!string.equals("fine"))
-			listaInput.add(string);
+			listaInput.put(string);
 		//se viene digitato fine non c'è bisogno di aggiungerlo
 	}
 
@@ -181,67 +181,67 @@ public class StepDefinitions {
 		assertTrue(trovataDestinazione);
 	}
 
-	@Then("controllo che {string} viene preso e posato")
-	public void controllo_che_l_oggetto_viene_preso_e_posato(String nomeAttrezzo) {
-		int i=0;
-		boolean condizione=false;
-		while(i<ioSim.getOutputList().size()&&!condizione) {
-			String stringa=ioSim.getOutputList().get(i);
-			if(stringa.contains(nomeAttrezzo)) {
-				condizione=true;
-			}
-			i++;
-		}
-
-		if(!condizione) {
-			System.out.println(corniciatore("ERRORE! L'attrezzo "+nomeAttrezzo+" non e' stato rilevato\n"
-					+ "Possibili cause:\n"
-					+ "-Il comando guarda non stampa il nome dell'attrezzo\n"
-					+ "-L'attrezzo non e' presente nella stanza"));
-		}
-
-		assertTrue(condizione); //trovato l'attrezzo nella stanza
-		condizione=false;
-		while(i<ioSim.getOutputList().size()&&!condizione) {
-			String stringa=ioSim.getOutputList().get(i);
-			if(stringa.contains("nessun attrezzo")) {
-				condizione=true;
-			}
-			i++;
-		}
-		boolean comandoPrendiFunzionante = condizione;
-		if(!condizione) {
-			System.out.println(corniciatore("ERRORE! Non e' stato possibile verificare il funzionamento del comando prendi\n"
-					+ "Possibili cause:\n"
-					+ "-La stanza contiene altri attrezzi oltre a "+nomeAttrezzo+"\n"
-					+ "-Il comando guarda non stampa 'nessun attrezzo' quando la stanza e' vuota di attrezzi\n"
-					+ "-Il comando prendi non funziona correttamente"));
-		}
-		assertTrue(condizione); //Nessun attrezzo nella stanza perchè è stato preso
-
-		condizione=false;
-		while(i<ioSim.getOutputList().size()&&!condizione) {
-			String stringa=ioSim.getOutputList().get(i);
-			if(stringa.contains(nomeAttrezzo)) {
-				condizione=true;
-			}
-			i++;
-		}
-		if(comandoPrendiFunzionante) {
-			if(!condizione) {
-				System.out.println(corniciatore("ERRORE! L'attrezzo "+nomeAttrezzo+" non e' stato rilevato una volta posato\n"
-						+ "Possibili cause:\n"
-						+ "-Il comando guarda non stampa il nome dell'attrezzo\n"
-						+ "-Il comando posa non funziona correttamente"));
-			}
-		}
-		assertTrue(condizione); //L'attrezzo è di nuovo presente nella stanza
-	}
+//	@Then("controllo che {string} viene preso e posato")
+//	public void controllo_che_l_oggetto_viene_preso_e_posato(String nomeAttrezzo) {
+//		int i=0;
+//		boolean condizione=false;
+//		while(i<listaOutput.size()&&!condizione) {
+//			String stringa=ioSim.getOutputList().get(i);
+//			if(stringa.contains(nomeAttrezzo)) {
+//				condizione=true;
+//			}
+//			i++;
+//		}
+//
+//		if(!condizione) {
+//			System.out.println(corniciatore("ERRORE! L'attrezzo "+nomeAttrezzo+" non e' stato rilevato\n"
+//					+ "Possibili cause:\n"
+//					+ "-Il comando guarda non stampa il nome dell'attrezzo\n"
+//					+ "-L'attrezzo non e' presente nella stanza"));
+//		}
+//
+//		assertTrue(condizione); //trovato l'attrezzo nella stanza
+//		condizione=false;
+//		while(i<ioSim.getOutputList().size()&&!condizione) {
+//			String stringa=ioSim.getOutputList().get(i);
+//			if(stringa.contains("nessun attrezzo")) {
+//				condizione=true;
+//			}
+//			i++;
+//		}
+//		boolean comandoPrendiFunzionante = condizione;
+//		if(!condizione) {
+//			System.out.println(corniciatore("ERRORE! Non e' stato possibile verificare il funzionamento del comando prendi\n"
+//					+ "Possibili cause:\n"
+//					+ "-La stanza contiene altri attrezzi oltre a "+nomeAttrezzo+"\n"
+//					+ "-Il comando guarda non stampa 'nessun attrezzo' quando la stanza e' vuota di attrezzi\n"
+//					+ "-Il comando prendi non funziona correttamente"));
+//		}
+//		assertTrue(condizione); //Nessun attrezzo nella stanza perchè è stato preso
+//
+//		condizione=false;
+//		while(i<ioSim.getOutputList().size()&&!condizione) {
+//			String stringa=ioSim.getOutputList().get(i);
+//			if(stringa.contains(nomeAttrezzo)) {
+//				condizione=true;
+//			}
+//			i++;
+//		}
+//		if(comandoPrendiFunzionante) {
+//			if(!condizione) {
+//				System.out.println(corniciatore("ERRORE! L'attrezzo "+nomeAttrezzo+" non e' stato rilevato una volta posato\n"
+//						+ "Possibili cause:\n"
+//						+ "-Il comando guarda non stampa il nome dell'attrezzo\n"
+//						+ "-Il comando posa non funziona correttamente"));
+//			}
+//		}
+//		assertTrue(condizione); //L'attrezzo è di nuovo presente nella stanza
+//	}
 
 	@Then("viene mostrato il messaggio di morte")
 	public void viene_mostrato_il_messaggio_di_morte() {
 		boolean trovataParolaChiave = false;
-		for(String stringa:ioSim.getOutputList()) {
+		for(String stringa:listaOutput) {
 			if(stringa.contains("morto")) {
 				//esiste la stringa di morte all'interno dell stampe di gioco
 				trovataParolaChiave=true;
