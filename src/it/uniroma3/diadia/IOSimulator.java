@@ -1,9 +1,5 @@
 package it.uniroma3.diadia;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -13,7 +9,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 
 public class IOSimulator implements IO {
-	
+	private static final int INPUT_LIST_LENGTH=1;
 	private BlockingQueue<String> inputList;
 	private BlockingQueue<String> outputList;
 	
@@ -23,7 +19,7 @@ public class IOSimulator implements IO {
 	 */
 	
 	public IOSimulator() {
-		this.inputList = new LinkedBlockingQueue<String>();
+		this.inputList = new LinkedBlockingQueue<String>(INPUT_LIST_LENGTH);
 		this.outputList = new LinkedBlockingQueue<String>();
 	}
 	
@@ -78,11 +74,13 @@ public class IOSimulator implements IO {
 	 */
 	@Override
 	public String leggiRiga() {
-		String res = inputList.poll();
-		if(res!=null){
-			return res;
+		String res=null;
+		try {
+			res = inputList.take();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
-		return "fine";
+		return res;
 		// Per motivi di precauzione l'ultimo input è sempre fine
 	}
 }

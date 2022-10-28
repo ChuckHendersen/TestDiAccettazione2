@@ -61,8 +61,9 @@ public class StepDefinitions {
 	}
 	
 	@Given("il gioco e stato avviato")
-	public void il_gioco_e_stato_avviato() {
+	public void il_gioco_e_stato_avviato() throws InterruptedException {
 		threadDiGioco.start();
+		while(!threadDiGioco.isAlive());
 	}
 
 	@Given("^avviato$")
@@ -73,7 +74,7 @@ public class StepDefinitions {
 	@Then("viene mostrato il messaggio_di_benvenuto")
 	public void viene_mostrato_il_messaggio_di_benvenuto() {
 		try {
-			for(String stringa:ioSim.getOutputList()) {
+			for(String stringa:listaOutput) {
 				if(stringa.contains(MESSAGGIO_BENVENUTO)) {
 					//esiste la stringa di benvenuto all'interno dell stampe di gioco
 					assertTrue(true);
@@ -153,7 +154,7 @@ public class StepDefinitions {
 		//Iterator<String> itOutput = ioSim.getOutputList().iterator();
 		boolean trovataOrigine = false;
 		boolean trovataDestinazione = false;
-		for(String stampa:ioSim.getOutputList()) {
+		for(String stampa:listaOutput) {
 			if(stampa.contains(origine)) {
 				trovataOrigine=true;
 			}else {
