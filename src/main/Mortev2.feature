@@ -5,26 +5,26 @@ Feature: Il giocatore muore quando finisce i cfu
 
   @TestMorte
   Scenario: Eseguito un grande numero di spostamenti il giocatore muore e la partita termina
-    Given carico il comando "vai est"
-    Given carico il comando "vai ovest"
-    Given carico il comando "vai est"
-    Given carico il comando "vai ovest"
-    Given carico il comando "vai est"
-    Given carico il comando "vai ovest"
-    Given carico il comando "vai est"
-    Given carico il comando "vai ovest"
-    Given carico il comando "vai est"
-    Given carico il comando "vai ovest"
-    Given carico il comando "vai est"
-    Given carico il comando "vai ovest"
-    Given carico il comando "vai est"
-    Given carico il comando "vai ovest"
-    Given carico il comando "vai est"
-    Given carico il comando "vai ovest"
-    Given carico il comando "vai est"
-    Given carico il comando "vai ovest"
-    Given carico il comando "vai est"
-    Given carico il comando "vai ovest"
-    And il gioco e stato avviato 
+    Given inserisco il comando "vai est" in coda
+    And inserisco il comando "vai ovest" in coda
+    And inserisco il comando "vai est" in coda
+    And inserisco il comando "vai ovest" in coda
+    And inserisco il comando "vai est" in coda
+    And inserisco il comando "vai ovest" in coda
+    And inserisco il comando "vai est" in coda
+    And inserisco il comando "vai ovest" in coda
+    And inserisco il comando "vai est" in coda
+    And inserisco il comando "vai ovest" in coda
+    And inserisco il comando "vai est" in coda
+    And inserisco il comando "vai ovest" in coda
+    And inserisco il comando "vai est" in coda
+    And inserisco il comando "vai ovest" in coda
+    And inserisco il comando "vai est" in coda
+    And inserisco il comando "vai ovest" in coda
+    And inserisco il comando "vai est" in coda
+    And inserisco il comando "vai ovest" in coda
+    And inserisco il comando "vai est" in coda
+    And inserisco il comando "vai ovest" in coda
+    And il gioco viene avviato 
     Then viene mostrato il messaggio di morte
-    Then il gioco si chiude
+    And il gioco si chiude

@@ -53,8 +53,8 @@ public class StepDefinitions {
 		return stringa.toString();
 	}
 	
-	@Given("il gioco e stato avviato")
-	public void il_gioco_e_stato_avviato() {
+	@Given("il gioco viene avviato")
+	public void il_gioco_viene_avviato() {
 		ioSim.setListaInput(listaInput);
 		threadDiGioco.start();
 		try {
@@ -69,7 +69,7 @@ public class StepDefinitions {
 		System.out.println("Funziona");
 	}
 
-	@Then("viene mostrato il messaggio_di_benvenuto")
+	@Then("viene mostrato il messaggio di benvenuto")
 	public void viene_mostrato_il_messaggio_di_benvenuto() {
 		try {
 			stringaDiBenvenuto = ioSim.getOutputList().get(0);
@@ -140,8 +140,8 @@ public class StepDefinitions {
 		}
 	}
 
-	@Given("carico il comando {string}")
-	public void carico_il_comando(String string) {
+	@Given("inserisco il comando {string} in coda")
+	public void inserisco_il_comando_in_coda(String string) {
 		if(!string.equals("fine"))
 			listaInput.add(string);
 		//se viene digitato fine non c'è bisogno di aggiungerlo
